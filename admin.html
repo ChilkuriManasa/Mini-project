@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to bottom right, #2c3e50, #3498db, #2ecc71);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .user-table th,
+        .user-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-table th {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .user-table tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .buttons {
+            margin: 20px 0;
+            text-align: right;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            margin-left: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .refresh-btn {
+            background: #2ecc71;
+        }
+
+        .back-btn {
+            background: #3498db;
+        }
+
+        .no-users {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Details</h1>
+
+        <div class="buttons">
+            <button class="btn refresh-btn" onclick="loadUsers()">Refresh</button>
+            <a href="price.html" class="btn back-btn">Back to Main Page</a>
+        </div>
+
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <!-- Users will be listed here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function loadUsers() {
+            const tableBody = document.getElementById('userTableBody');
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+            // Clear current table content
+            tableBody.innerHTML = '';
+
+            if (users.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="no-users">No users registered</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Display all users
+            users.forEach(user => {
+                const isActive = currentUser && currentUser.email === user.email;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${isActive ? '🟢 Online' : '⚪ Offline'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Load users when page loads
+        window.onload = function() {
+            loadUsers();
+            // Refresh every 30 seconds
+            setInterval(loadUsers, 30000);
+        };
+    </script>
+</body>
+</html>
